@@ -4,7 +4,7 @@ const Window = @import("window/window.zig").Window;
 const renderer = @import("render/renderer.zig");
 const Shader = @import("render/shader.zig").Shader;
 const Mesh = @import("render/mesh.zig").Mesh;
-const vector = @import("math/math.zig").vector;
+const math = @import("math/math.zig");
 
 const vertices = [_]f32{ 0.0, 0.5, 0.0, -0.5, -0.5, 0.0, 0.5, -0.5, 0.0 };
 const indices = [_]u32{ 0, 1, 2 };
@@ -13,10 +13,12 @@ const vertex_source =
     \\#version 460 core
     \\layout (location = 0) in vec3 vPos;
     \\
-    \\uniform vec3 offset;
+    \\uniform mat4 model;
+    \\uniform mat4 projection;
+    \\uniform mat4 view;
     \\
     \\void main() {
-    \\    gl_Position = vec4(offset + vPos, 1.0);
+    \\    gl_Position = model * projection * view * vec4(vPos, 1.0);
     \\}
 ;
 
@@ -43,7 +45,10 @@ pub fn main() !void {
 
     try shader.compile();
 
-    const offset = vector.vec3(0.25, 0.25, 0.0);
+    const model = math.matrix.identity();
+
+    const projection = math.matrix.perspective(std.math.degreesToRadians(90.0), 1280.0 / 720.0, 0.01, 100.0);
+    const view = math.matrix.mul(math.matrix.mul(math.matrix.fromTranslation(math.vector.vec3(0.0, 0.0, -1.0)), math.matrix.fromAxisAngle(math.vector.vec3(0.0, 1.0, 0.0), std.math.degreesToRadians(0.0))), math.matrix.identity());
 
     while (!win.shouldClose()) {
         Window.pollEvents();
@@ -52,7 +57,9 @@ pub fn main() !void {
 
         shader.use();
 
-        try shader.setVec3("offset", offset);
+        try shader.setMat4("model", model);
+        try shader.setMat4("projection", projection);
+        try shader.setMat4("view", view);
 
         mesh.draw();
 
