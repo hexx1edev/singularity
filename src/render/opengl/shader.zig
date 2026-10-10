@@ -1,6 +1,7 @@
 const zopengl = @import("zopengl");
 const gl = zopengl.bindings;
 const std = @import("std");
+const math = @import("../../math/math.zig");
 
 pub const OpenGLShader = struct {
     vertex_source: [:0]const u8,
@@ -81,5 +82,46 @@ pub const OpenGLShader = struct {
 
     pub fn use(self: *const OpenGLShader) void {
         gl.useProgram(self.program);
+    }
+
+    fn getUniformLocation(self: *const OpenGLShader, name: [:0]const u8) error{NotFound}!c_int {
+        const loc = gl.getUniformLocation(self.program, name.ptr);
+        if (loc < 0) return error.NotFound;
+        return loc;
+    }
+
+    pub fn setVec2(self: *const OpenGLShader, name: [:0]const u8, vec: math.vector.Vec2) error{NotFound}!void {
+        const loc = try self.getUniformLocation(name);
+        gl.uniform2fv(loc, 1, &math.vector.asArray2(vec));
+    }
+
+    pub fn setVec3(self: *const OpenGLShader, name: [:0]const u8, vec: math.vector.Vec3) error{NotFound}!void {
+        const loc = try self.getUniformLocation(name);
+        gl.uniform3fv(loc, 1, &math.vector.asArray3(vec));
+    }
+
+    pub fn setVec4(self: *const OpenGLShader, name: [:0]const u8, vec: math.vector.Vec4) error{NotFound}!void {
+        const loc = try self.getUniformLocation(name);
+        gl.uniform4fv(loc, 1, &math.vector.asArray4(vec));
+    }
+
+    pub fn setInt(self: *const OpenGLShader, name: [:0]const u8, value: i32) error{NotFound}!void {
+        const loc = try self.getUniformLocation(name);
+        gl.uniform1i(loc, @intCast(value));
+    }
+
+    pub fn setFloat(self: *const OpenGLShader, name: [:0]const u8, value: f32) error{NotFound}!void {
+        const loc = try self.getUniformLocation(name);
+        gl.uniform1f(loc, value);
+    }
+
+    pub fn setMat3(self: *const OpenGLShader, name: [:0]const u8, mat: math.matrix.Mat3) error{NotFound}!void {
+        const loc = try self.getUniformLocation(name);
+        gl.uniformMatrix3fv(loc, 1, gl.FALSE, &math.matrix.asArray3(mat));
+    }
+
+    pub fn setMat4(self: *const OpenGLShader, name: [:0]const u8, mat: math.matrix.Mat4) error{NotFound}!void {
+        const loc = try self.getUniformLocation(name);
+        gl.uniformMatrix4fv(loc, 1, gl.FALSE, &math.matrix.asArray4(mat));
     }
 };

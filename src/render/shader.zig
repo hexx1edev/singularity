@@ -1,5 +1,6 @@
 const gl = @import("opengl/shader.zig");
 const Renderer = @import("renderer.zig").Renderer;
+const math = @import("../math/math.zig");
 
 pub const Shader = struct {
     impl: union(enum) { opengl: gl.OpenGLShader },
@@ -33,6 +34,62 @@ pub const Shader = struct {
         switch (self.impl) {
             .opengl => |*impl| {
                 impl.use();
+            },
+        }
+    }
+
+    pub fn setVec2(self: *const Shader, name: [:0]const u8, vec: math.vector.Vec2) !void {
+        switch (self.impl) {
+            .opengl => |*impl| {
+                try impl.setVec2(name, vec);
+            },
+        }
+    }
+
+    pub fn setVec3(self: *const Shader, name: [:0]const u8, vec: math.vector.Vec3) !void {
+        switch (self.impl) {
+            .opengl => |*impl| {
+                try impl.setVec3(name, vec);
+            },
+        }
+    }
+
+    pub fn setVec4(self: *const Shader, name: [:0]const u8, vec: math.vector.Vec4) !void {
+        switch (self.impl) {
+            .opengl => |*impl| {
+                try impl.setVec4(name, vec);
+            },
+        }
+    }
+
+    pub fn setInt(self: *const Shader, name: [:0]const u8, value: i32) !void {
+        switch (self.impl) {
+            .opengl => |*impl| {
+                try impl.setInt(name, value);
+            },
+        }
+    }
+
+    pub fn setFloat(self: *const Shader, name: [:0]const u8, value: f32) !void {
+        switch (self.impl) {
+            .opengl => |*impl| {
+                try impl.setFloat(name, value);
+            },
+        }
+    }
+
+    pub fn setMat3(self: *const Shader, name: [:0]const u8, vec: math.matrix.Mat3) !void {
+        switch (self.impl) {
+            .opengl => |*impl| {
+                try impl.setMat3(name, vec);
+            },
+        }
+    }
+
+    pub fn setMat4(self: *const Shader, name: [:0]const u8, vec: math.matrix.Mat4) !void {
+        switch (self.impl) {
+            .opengl => |*impl| {
+                try impl.setMat4(name, vec);
             },
         }
     }
