@@ -92,17 +92,20 @@ pub const OpenGLShader = struct {
 
     pub fn setVec2(self: *const OpenGLShader, name: [:0]const u8, vec: math.vector.Vec2) error{NotFound}!void {
         const loc = try self.getUniformLocation(name);
-        gl.uniform2fv(loc, 1, &math.vector.asArray2(vec));
+        const values = vec.asArray();
+        gl.uniform2fv(loc, 1, &values);
     }
 
     pub fn setVec3(self: *const OpenGLShader, name: [:0]const u8, vec: math.vector.Vec3) error{NotFound}!void {
         const loc = try self.getUniformLocation(name);
-        gl.uniform3fv(loc, 1, &math.vector.asArray3(vec));
+        const values = vec.asArray();
+        gl.uniform3fv(loc, 1, &values);
     }
 
     pub fn setVec4(self: *const OpenGLShader, name: [:0]const u8, vec: math.vector.Vec4) error{NotFound}!void {
         const loc = try self.getUniformLocation(name);
-        gl.uniform4fv(loc, 1, &math.vector.asArray4(vec));
+        const values = vec.asArray();
+        gl.uniform4fv(loc, 1, &values);
     }
 
     pub fn setInt(self: *const OpenGLShader, name: [:0]const u8, value: i32) error{NotFound}!void {
@@ -115,13 +118,10 @@ pub const OpenGLShader = struct {
         gl.uniform1f(loc, value);
     }
 
-    pub fn setMat3(self: *const OpenGLShader, name: [:0]const u8, mat: math.matrix.Mat3) error{NotFound}!void {
-        const loc = try self.getUniformLocation(name);
-        gl.uniformMatrix3fv(loc, 1, gl.FALSE, &math.matrix.asArray3(mat));
-    }
-
     pub fn setMat4(self: *const OpenGLShader, name: [:0]const u8, mat: math.matrix.Mat4) error{NotFound}!void {
         const loc = try self.getUniformLocation(name);
-        gl.uniformMatrix4fv(loc, 1, gl.FALSE, &math.matrix.asArray4(mat));
+        const rows = mat.asArray();
+        // Mat4 keeps its rows contiguous, so OpenGL has to transpose on upload
+        gl.uniformMatrix4fv(loc, 1, gl.TRUE, @ptrCast(&rows));
     }
 };

@@ -45,10 +45,17 @@ pub fn main() !void {
 
     try shader.compile();
 
-    const model = math.matrix.identity();
+    const Mat4 = math.matrix.Mat4;
+    const Vec3 = math.vector.Vec3;
 
-    const projection = math.matrix.perspective(std.math.degreesToRadians(90.0), 1280.0 / 720.0, 0.01, 100.0);
-    const view = math.matrix.mul(math.matrix.mul(math.matrix.fromTranslation(math.vector.vec3(0.0, 0.0, -1.0)), math.matrix.fromAxisAngle(math.vector.vec3(0.0, 1.0, 0.0), std.math.degreesToRadians(0.0))), math.matrix.identity());
+    const model = Mat4.identity();
+
+    const projection = Mat4.perspective(std.math.degreesToRadians(90.0), 1280.0 / 720.0, 0.01, 100.0) orelse return error.BadProjection;
+    const view = Mat4.rotate(
+        Mat4.translate(Mat4.identity(), Vec3.fromAxis(0.0, 0.0, -1.0)),
+        std.math.degreesToRadians(0.0),
+        Vec3.fromAxis(0.0, 1.0, 0.0),
+    );
 
     while (!win.shouldClose()) {
         Window.pollEvents();

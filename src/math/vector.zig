@@ -55,8 +55,8 @@ pub const Vec2 = struct {
     }
 
     /// Returns vector absolute value
-    pub fn abs(self: *const Vec2) Vec2 {
-        return fromArray(@abs(self.Simd));
+    pub fn abs(vec: Vec2) Vec2 {
+        return fromArray(@abs(vec.Simd));
     }
 
     /// Returns the smaller value of each axis
@@ -301,8 +301,8 @@ pub const Vec3 = struct {
     }
 
     /// Returns vector absolute value
-    pub fn abs(self: *const Vec3) Vec3 {
-        return fromArray(@abs(self.Simd));
+    pub fn abs(vec: Vec3) Vec3 {
+        return fromArray(@abs(vec.Simd));
     }
 
     /// Returns the smaller value of each axis
@@ -561,8 +561,8 @@ pub const Vec4 = struct {
     }
 
     /// Returns vector absolute value
-    pub fn abs(self: *const Vec4) Vec4 {
-        return fromArray(@abs(self.Simd));
+    pub fn abs(vec: Vec4) Vec4 {
+        return fromArray(@abs(vec.Simd));
     }
 
     /// Returns the smaller value of each axis

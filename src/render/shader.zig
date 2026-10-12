@@ -78,18 +78,10 @@ pub const Shader = struct {
         }
     }
 
-    pub fn setMat3(self: *const Shader, name: [:0]const u8, vec: math.matrix.Mat3) !void {
+    pub fn setMat4(self: *const Shader, name: [:0]const u8, mat: math.matrix.Mat4) !void {
         switch (self.impl) {
             .opengl => |*impl| {
-                try impl.setMat3(name, vec);
-            },
-        }
-    }
-
-    pub fn setMat4(self: *const Shader, name: [:0]const u8, vec: math.matrix.Mat4) !void {
-        switch (self.impl) {
-            .opengl => |*impl| {
-                try impl.setMat4(name, vec);
+                try impl.setMat4(name, mat);
             },
         }
     }
