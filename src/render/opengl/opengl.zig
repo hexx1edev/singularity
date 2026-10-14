@@ -19,4 +19,12 @@ pub const OpenGL = struct {
         gl.clearColor(r, g, b, a);
         gl.clear(gl.COLOR_BUFFER_BIT);
     }
+
+    pub fn enableCulling() void {
+        gl.enable(gl.CULL_FACE);
+    }
+
+    pub fn disableCulling() void {
+        gl.disable(gl.CULL_FACE);
+    }
 };

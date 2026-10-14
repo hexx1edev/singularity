@@ -1,20 +1,13 @@
 .{
     .name = .singularity,
     .version = "0.16.0",
-    .dependencies = .{
-        .zglfw = .{
-            .url = "https://github.com/zig-gamedev/zglfw/archive/refs/heads/main.tar.gz",
-            .hash = "zglfw-0.10.0-dev-zgVDNNu5IQAk-UK7gIg0LWMmMzxj4sK9xCSTisLhjgI1",
-        },
-        .zopengl = .{
-            .url = "https://github.com/zig-gamedev/zopengl/archive/refs/heads/main.tar.gz",
-            .hash = "zopengl-0.6.0-dev-5-tnz8mnDgCHR72YtUpLBYW_u4JgZ0Ub-UFX-M0zRSG1",
-        },
-        .zmath = .{
-            .url = "https://github.com/zig-gamedev/zmath/archive/refs/heads/main.tar.gz",
-            .hash = "zmath-0.11.0-dev-wjwivTwtAwDOjG2_KGP-HLtHrONfsFfHttalmxFAGVAK",
-        },
-    },
+    .dependencies = .{ .zglfw = .{
+        .url = "https://github.com/zig-gamedev/zglfw/archive/refs/heads/main.tar.gz",
+        .hash = "zglfw-0.10.0-dev-zgVDNNu5IQAk-UK7gIg0LWMmMzxj4sK9xCSTisLhjgI1",
+    }, .zopengl = .{
+        .url = "https://github.com/zig-gamedev/zopengl/archive/refs/heads/main.tar.gz",
+        .hash = "zopengl-0.6.0-dev-5-tnz8mnDgCHR72YtUpLBYW_u4JgZ0Ub-UFX-M0zRSG1",
+    } },
     .paths = .{""},
     .fingerprint = 0xeeb4dab247353d45,
 }

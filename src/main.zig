@@ -6,8 +6,8 @@ const Shader = @import("render/shader.zig").Shader;
 const Mesh = @import("render/mesh.zig").Mesh;
 const math = @import("math/math.zig");
 
-const vertices = [_]f32{ 0.0, 0.5, 0.0, -0.5, -0.5, 0.0, 0.5, -0.5, 0.0 };
-const indices = [_]u32{ 0, 1, 2 };
+const vertices = [_]f32{ -0.5, 0.5, 0.0, -0.5, -0.5, 0.0, 0.5, 0.5, 0.0, 0.5, 0.5, 0.0, 0.5, -0.5, 0.0, -0.5, -0.5, 0.0 };
+const indices = [_]u32{ 0, 1, 2, 3, 4, 5 };
 
 const vertex_source =
     \\#version 460 core
@@ -18,7 +18,7 @@ const vertex_source =
     \\uniform mat4 view;
     \\
     \\void main() {
-    \\    gl_Position = model * projection * view * vec4(vPos, 1.0);
+    \\    gl_Position = projection * view * model * vec4(vPos, 1.0);
     \\}
 ;
 
@@ -48,7 +48,7 @@ pub fn main() !void {
     const Mat4 = math.matrix.Mat4;
     const Vec3 = math.vector.Vec3;
 
-    const model = Mat4.identity();
+    var rotation: f32 = 0.0;
 
     const projection = Mat4.perspective(std.math.degreesToRadians(90.0), 1280.0 / 720.0, 0.01, 100.0) orelse return error.BadProjection;
     const view = Mat4.rotate(
@@ -57,8 +57,19 @@ pub fn main() !void {
         Vec3.fromAxis(0.0, 1.0, 0.0),
     );
 
+    var lastTime: f32 = 0.0;
+    var deltaTime: f32 = 0.0;
+
     while (!win.shouldClose()) {
         Window.pollEvents();
+
+        const time = Window.getTime();
+        deltaTime = time - lastTime;
+        lastTime = time;
+
+        var model = Mat4.identity();
+        model = Mat4.rotate(model, rotation, Vec3.fromAxis(0.0, 1.0, 0.0));
+        rotation += 5.0 * deltaTime;
 
         backend.clearColor(1.0, 1.0, 1.0, 1.0);
 

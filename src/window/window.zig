@@ -40,4 +40,8 @@ pub const Window = struct {
         self.window.destroy();
         glfw.terminate();
     }
+
+    pub fn getTime() f32 {
+        return @as(f32, @floatCast(glfw.getTime()));
+    }
 };

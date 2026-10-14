@@ -21,4 +21,16 @@ pub const Renderer = struct {
             .opengl => gl.OpenGL.clearColor(r, g, b, a),
         }
     }
+
+    pub fn enableCulling(self: *const Renderer) void {
+        switch (self.impl) {
+            .opengl => gl.OpenGL.enableCulling(),
+        }
+    }
+
+    pub fn disableCulling(self: *const Renderer) void {
+        switch (self.impl) {
+            .opengl => gl.OpenGL.disableCulling(),
+        }
+    }
 };
