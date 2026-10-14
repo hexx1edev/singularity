@@ -1,5 +1,6 @@
 const std = @import("std");
 const sm = @import("scalar.zig");
+const qm = @import("quaternion.zig");
 
 pub const Vec2 = struct {
     Simd: @Vector(2, f32),
@@ -377,6 +378,33 @@ pub const Vec3 = struct {
         return @sqrt(@reduce(.Add, diff * diff));
     }
 
+    /// Rotates vector by quaternion, the `q * v * q'` sandwich product. The
+    /// quaternion is normalized first, so a non-unit one still rotates without scaling
+    pub fn rotate(vec: Vec3, quat: qm.Quaternion) Vec3 {
+        const q = quat.normalize();
+
+        const ux = q.x();
+        const uy = q.y();
+        const uz = q.z();
+        const uw = q.w();
+
+        const vx = vec.x();
+        const vy = vec.y();
+        const vz = vec.z();
+
+        // t = (u X v) + w * v
+        const tx = uy * vz - uz * vy + uw * vx;
+        const ty = uz * vx - ux * vz + uw * vy;
+        const tz = ux * vy - uy * vx + uw * vz;
+
+        // v' = v + 2 * (u X t)
+        return fromAxis(
+            vx + 2.0 * (uy * tz - uz * ty),
+            vy + 2.0 * (uz * tx - ux * tz),
+            vz + 2.0 * (ux * ty - uy * tx),
+        );
+    }
+
     /// Linear interpolation
     pub fn lerp(a: Vec3, b: Vec3, t: f32) Vec3 {
         return fromAxis(
@@ -635,6 +663,13 @@ pub const Vec4 = struct {
     pub fn distance(a: Vec4, b: Vec4) f32 {
         const diff = a.Simd - b.Simd;
         return @sqrt(@reduce(.Add, diff * diff));
+    }
+
+    /// Rotates the XYZ part of the vector by quaternion, leaving W untouched
+    pub fn rotate(vec: Vec4, quat: qm.Quaternion) Vec4 {
+        const rotated = Vec3.rotate(Vec3.fromAxis(vec.x(), vec.y(), vec.z()), quat);
+
+        return fromAxis(rotated.x(), rotated.y(), rotated.z(), vec.w());
     }
 
     /// Linear interpolation

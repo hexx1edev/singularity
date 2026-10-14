@@ -32,7 +32,9 @@ const fragment_source =
     \\}
 ;
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
+    const alloc = init.gpa;
+
     var win = try Window.new("singularity demo", 1280, 720);
     defer win.destroy();
 
@@ -47,8 +49,9 @@ pub fn main() !void {
 
     const Mat4 = math.matrix.Mat4;
     const Vec3 = math.vector.Vec3;
+    const Quaternion = math.quaternion.Quaternion;
 
-    var rotation: f32 = 0.0;
+    var rotation = Quaternion.identity();
 
     const projection = Mat4.perspective(std.math.degreesToRadians(90.0), 1280.0 / 720.0, 0.01, 100.0) orelse return error.BadProjection;
     const view = Mat4.rotate(
@@ -60,6 +63,12 @@ pub fn main() !void {
     var lastTime: f32 = 0.0;
     var deltaTime: f32 = 0.0;
 
+    // FPS is averaged over a window rather than read off a single frame, so the
+    // counter stays legible instead of flickering every frame
+    const fps_interval: f32 = 0.25;
+    var fps_elapsed: f32 = 0.0;
+    var fps_frames: u32 = 0;
+
     while (!win.shouldClose()) {
         Window.pollEvents();
 
@@ -67,9 +76,25 @@ pub fn main() !void {
         deltaTime = time - lastTime;
         lastTime = time;
 
-        var model = Mat4.identity();
-        model = Mat4.rotate(model, rotation, Vec3.fromAxis(0.0, 1.0, 0.0));
-        rotation += 5.0 * deltaTime;
+        fps_elapsed += deltaTime;
+        fps_frames += 1;
+
+        if (fps_elapsed >= fps_interval) {
+            const fps = @as(f32, @floatFromInt(fps_frames)) / fps_elapsed;
+
+            const title = try std.fmt.allocPrintSentinel(alloc, "singularity demo | FPS: {d:.1}", .{fps}, 0);
+            defer alloc.free(title);
+
+            win.setTitle(title);
+
+            fps_elapsed = 0.0;
+            fps_frames = 0;
+        }
+
+        const spin = Quaternion.fromAngle(5.0 * deltaTime, Vec3.fromAxis(0.0, 1.0, 0.0));
+        rotation = spin.mul(rotation).normalize();
+
+        const model = rotation.asMatrix();
 
         backend.clearColor(1.0, 1.0, 1.0, 1.0);
 

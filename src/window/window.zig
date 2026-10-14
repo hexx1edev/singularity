@@ -44,4 +44,8 @@ pub const Window = struct {
     pub fn getTime() f32 {
         return @as(f32, @floatCast(glfw.getTime()));
     }
+
+    pub fn setTitle(self: *Window, title: [:0]const u8) void {
+        glfw.setWindowTitle(self.window, title);
+    }
 };
